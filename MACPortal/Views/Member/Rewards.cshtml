@@ -1,0 +1,111 @@
+﻿@model MACPortal.ViewModel.MemberRewardsVM
+@{
+    ViewBag.Title = "Premiação";
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+<br/>
+<!--
+    <br/>
+    <h3 class="special-title">Premiação</h3>
+    <br/>
+-->
+
+@using (var g = Html.Bootstrap().Begin(new ButtonGroup().HtmlAttributes(new { @style = "width:95%;" })))
+{
+    var widthPercentage = 100/Model.TiersCost.Count;
+    for (var i = 0; i < Model.TiersCost.Count; i++)
+    {
+        var button = g.Button().Text("Faixa " + (i + 1) + "<b>" + string.Format("{0:n0}", Model.TiersCost[i]) + " Pontos</b>").
+            Class("rewards-button").
+            HtmlAttributes(new { onclick = "FormControlChange('" + i + "', this)", @style = "width:" + widthPercentage + "%; min-width:150px;"});
+
+        button.Id("tier-" + (i + 1));
+        @button
+    }
+}
+
+
+@for (var i = 0; i < Model.TiersRewards.Count; i++)
+{
+    <div id="@i-tier" style="display: none">
+        @Html.Partial("_RewardTierPartial", Model.TiersRewards[i])
+    </div>
+}
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        $(function () {
+            setTimeout(function() {
+                $('.carousel').carousel('pause');
+            }, 500);
+            @if (Model.GoToTier != null)
+            {
+                <text>
+                    instantForm = true;
+                    $("#tier-@Model.GoToTier").click();
+                    $("#item-bt-@Model.GoToId").click();
+                    $('html, body').animate({
+                        scrollTop: $("#@Model.GoToId").offset().top
+                    }, 2000);
+                
+                </text>
+            }
+            else
+            {
+                <text>
+                    $("#tier-1").click();
+                </text>
+            }
+            //FormControlChange("brokers", document.findByName("start-control"));
+        });
+
+        var instantForm = false;
+        var currentForms;
+        var currentFormsNames, currentButton;
+        var first;
+
+        function FormControlChange(formName, button) {
+            if (currentFormsNames == formName) return;
+            var i;
+            currentFormsNames = formName;
+            if (currentButton != null) {
+                currentButton.removeClass("active");
+            }
+            if (currentForms != null) {
+                for (i = 0; i < currentForms.length; i++) {
+                    if (instantForm) {
+                        currentForms[i].hide();
+                    } else {
+                        currentForms[i].slideUp();
+                    }
+                }
+            }
+
+            var formsNames = currentFormsNames.split(",");
+            currentButton = $(button);
+            currentForms = new Array();
+            for (i = 0; i < formsNames.length; i++) {
+                currentForms.push($("#" + formsNames[i] + "-tier"));
+            }
+            if (currentButton != null) {
+                currentButton.addClass("active");
+            }
+            if (currentForms != null) {
+                for (i = 0; i < currentForms.length; i++) {
+                    if (instantForm) {
+                        currentForms[i].show();
+                    } else {
+                        currentForms[i].slideDown();
+                    }
+                }
+            }
+            setTimeout(
+              function () {
+                  $('html, body').scroll();
+              }, 500);
+            instantForm = false;
+        }
+    </script>
+}

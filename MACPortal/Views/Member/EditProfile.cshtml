@@ -1,0 +1,29 @@
+﻿@model MACPortal.ViewModel.MemberEditProfileVM
+
+@{
+    ViewBag.Title = "Editar Perfil";
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+<br/>
+<h2 class="special-title">Editar Perfil</h2>
+<br/>
+
+<section id="pre-register-form" style="margin-left: 20px">
+    @{ Html.RenderPartial("_EditUserPartial", Model.User); }
+</section>
+
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        $(function () {
+            $("#cpf-input").val(FormatCPF($("#cpf-input").val()));
+        });
+        
+        function FormatCPF(cpf) {
+            return cpf.substring(0, 3) + "." + cpf.substring(3, 6) + "." + cpf.substring(6, 9) + "-" + cpf.substring(9, 11);
+        }
+    </script>
+}
+

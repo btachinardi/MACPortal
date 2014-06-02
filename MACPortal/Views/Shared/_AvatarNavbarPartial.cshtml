@@ -1,0 +1,11 @@
+﻿@using (var g = Html.Bootstrap().Begin(new ButtonGroup()))
+{
+    @g.Button().Id("hair-control").Text("Cabelo").HtmlAttributes(new { @onclick = "FormControlChange('hair,hair-color', this)" })
+    @g.Button().Text("Rosto").HtmlAttributes(new {@onclick = "FormControlChange('face,skin-color', this)"})
+    @g.Button().Text("Olhos").HtmlAttributes(new {@onclick = "FormControlChange('eyes,eyes-color', this)"})
+    @g.Button().Text("Boca").HtmlAttributes(new {@onclick = "FormControlChange('mouth,mouth-color', this)"})
+    @g.Button().Text("Nariz").HtmlAttributes(new {@onclick = "FormControlChange('nose', this)"})
+    @g.Button().Text("Orelhas").HtmlAttributes(new {@onclick = "FormControlChange('ears', this)"})
+    @g.Button().Text("Roupas").HtmlAttributes(new {@onclick = "FormControlChange('clothes,clothes-color', this)"})
+    @g.Button().Text("Acessórios").HtmlAttributes(new {@onclick = "FormControlChange('accessory-head,accessory-body,accessory-face', this)"})
+}

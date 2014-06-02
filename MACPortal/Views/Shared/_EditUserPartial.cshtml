@@ -1,0 +1,72 @@
+﻿@using MACPortal.ViewModel
+@model MACPortal.ViewModel.UserVM
+
+@using (var regular = Html.Bootstrap().Begin(new Form().Type(FormType.Horizontal).InputWidthMd(7)))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        
+        @Html.HiddenFor(model => model.UserID)
+        
+        if (Model.Mode == EditUserMode.PASSWORD)
+        {
+            @regular.FormGroup().PasswordFor(model => model.OldPassword).Label().WidthMd(5)
+            @regular.FormGroup().PasswordFor(model => model.NewPassword).Label().WidthMd(5)
+            @regular.FormGroup().PasswordFor(model => model.ConfirmPassword).Label().WidthMd(5)
+            
+            @Html.HiddenFor(model => model.Gender)
+            @Html.HiddenFor(model => model.Name)
+            @Html.HiddenFor(model => model.CPF)
+            @Html.HiddenFor(model => model.Email)
+            @Html.HiddenFor(model => model.Birthday)
+            @Html.HiddenFor(model => model.ComercialName)
+            @Html.HiddenFor(model => model.HomePhone)
+            @Html.HiddenFor(model => model.CellPhone)
+            @Html.HiddenFor(model => model.CEP)
+            @Html.HiddenFor(model => model.Street)
+            @Html.HiddenFor(model => model.Number)
+            @Html.HiddenFor(model => model.Neighborhood)
+            @Html.HiddenFor(model => model.City)
+            @Html.HiddenFor(model => model.State)
+            @Html.HiddenFor(model => model.AcceptEmail)
+            @Html.HiddenFor(model => model.AcceptSMS)
+
+        }
+        else 
+        {
+            @Html.HiddenFor(model => model.OldPassword)
+            if (Model.Mode == EditUserMode.COMPLETE)
+            {   
+                @regular.FormGroup().PasswordFor(model => model.NewPassword).Label().WidthMd(5)
+                @regular.FormGroup().PasswordFor(model => model.ConfirmPassword).Label().WidthMd(5)
+            }
+            else
+            {
+                @Html.HiddenFor(model => model.NewPassword)
+                @Html.HiddenFor(model => model.ConfirmPassword)
+            }
+            
+            <br/>
+            @regular.FormGroup().RadioButtonsFromEnumFor(model => model.Gender).AsButtonGroup().Label().Class("col-md-5 remove-col-lg-2")
+            @regular.FormGroup().TextBoxFor(model => model.Name).Placeholder("Pedro Antônio").Label().WidthMd(5)
+            @regular.FormGroup().TextBoxFor(model => model.CPF).Disabled().Id("cpf-input").Label().WidthMd(5)
+            @regular.FormGroup().TextBoxFor(model => model.Email).Placeholder("pedro@mac.com.br").Label().WidthMd(5)
+            @regular.FormGroup().TextBoxFor(model => model.Birthday).HtmlAttributes(new{@type = "date"}).Label().WidthMd(5)
+            @regular.FormGroup().TextBoxFor(model => model.ComercialName).Disabled().Label().WidthMd(5)
+            <br/>
+            @regular.FormGroup().TextBoxFor(model => model.HomePhone).Placeholder("(11)5239-9872").Label().WidthMd(5)
+            @regular.FormGroup().TextBoxFor(model => model.CellPhone).Placeholder("(11)9-5239-9872").Label().WidthMd(5)
+            @regular.FormGroup().TextBoxFor(model => model.CEP).Placeholder("07931-954").Label().WidthMd(5)
+            @regular.FormGroup().TextBoxFor(model => model.Street).Placeholder("Avenida Roberto").Label().WidthMd(5)
+            @regular.FormGroup().TextBoxFor(model => model.Number).Placeholder("945").Label().WidthMd(5)
+            @regular.FormGroup().TextBoxFor(model => model.Complement).Placeholder("72").Label().WidthMd(5)
+            @regular.FormGroup().TextBoxFor(model => model.Neighborhood).Placeholder("Vila Madalena").Label().WidthMd(5)
+            @regular.FormGroup().TextBoxFor(model => model.City).Placeholder("São Paulo").Label().WidthMd(5)
+            @regular.FormGroup().TextBoxFor(model => model.State).Placeholder("SP").Label().WidthMd(5)
+        
+            @regular.FormGroup().ControlsHtmlAttrs(new {@class = "col-lg-10"}).CheckBoxFor(model => model.AcceptEmail).Label().WidthXs(1)
+            @regular.FormGroup().ControlsHtmlAttrs(new {@class = "col-lg-10"}).CheckBoxFor(model => model.AcceptSMS).Label().WidthXs(1)
+        }
+        
+        @Html.Bootstrap().SubmitButton().AppendIcon("glyphicon glyphicon-chevron-right").Text(Model.SubmitButtonText).Class("register-bt").Size(ButtonSize.Large)
+    }

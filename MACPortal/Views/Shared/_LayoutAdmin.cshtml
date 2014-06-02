@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Section = "Administrator";
+    //Layout = "~/Views/Shared/_Layout.cshtml"; 
+    Layout = "~/Views/Shared/_BootstrapLayout.basic.cshtml";
+}
+
+@section header
+{
+    <div>
+        <p class="site-title">@Html.ActionLink("Portal Campanha de Incentivo MAC", "Index", "Admin")</p>
+    </div>
+}
+
+@section navigation
+{
+    @using (var nav = Html.Bootstrap().Begin(new Nav().Style(NavType.Pills)))
+    {
+        @nav.ActionLink("Corretores", "Index", "ManageBrokers")
+        @nav.ActionLink("Gerentes", "Index", "ManageManager")
+        @nav.ActionLink("Coordenadores", "Index", "ManageCoordinator")
+        @nav.ActionLink("Vendas", "Index", "ManageSales")
+        @nav.ActionLink("Recompensas", "Index", "ManageReward")
+    }
+}
+
+
+@RenderBody()
+@section scripts { @RenderSection("scripts", required:false) }
+@section featured { @RenderSection("featured", required:false) }

@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "Área Administrativa";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Área Administrativa</h2>
+
+<p>Bem vindo à área administrativa.</p>
+<br/>
+<section id="pre-register-form" class="container-narrow">
+    <h3><strong>@ViewBag.PreRegisteredCount</strong> Usuários Criados</h3>
+    <h3><strong>@ViewBag.AvatarCount</strong> Avatares Criados</h3>
+    <br/>
+
+
+    <h2>Importar Planilha Excell</h2>
+    @using (var f = Html.Bootstrap().Begin(new Form("ImportExcell").FormMethod(FormMethod.Post).Type(FormType.Horizontal).HtmlAttributes(new { enctype = "multipart/form-data" })))
+    {
+
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        @f.FormGroup().File("Excell").Id("Excell").HelpText("Selecione a planilha que deseja importar").Label().LabelText("Planilha Excell")
+        @Html.Bootstrap().SubmitButton().AppendIcon("glyphicon glyphicon-chevron-right").Text("Importar")
+    }
+
+    <br/>
+    <h2>Reiniciar Usuário</h2>
+    @using (var f = Html.Bootstrap().Begin(new Form("ResetUser").FormMethod(FormMethod.Post).Type(FormType.Horizontal)))
+    {
+
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        @f.FormGroup().TextBox("name").Id("name").Label().LabelText("Nome Comercial")
+        @f.FormGroup().CheckBox("full").Id("full").Label().LabelText("Resetar Todos os Dados de Cadastro?")
+        @Html.Bootstrap().SubmitButton().AppendIcon("glyphicon glyphicon-chevron-right").Text("Reiniciar")
+    }
+    <br/>
+
+    <p>
+    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" })) {
+        @Html.AntiForgeryToken()
+        <a href="javascript:document.getElementById('logoutForm').submit()">Sair Desta Conta</a>
+    }
+</section>
+</p>

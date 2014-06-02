@@ -1,0 +1,54 @@
+﻿@model MACPortal.ViewModel.MemberHomeVM
+@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+
+<div class="carousel-rewards">
+    @using (var c = Html.Bootstrap().Begin(new Carousel("carousel-rewards")))
+    {
+        var randomItems = Model.Rewards.GetRandom(15);
+        foreach (var rewardItem in randomItems)
+        {
+            using (c.CustomItem())
+            {
+                <a href="@rewardItem.RewardUrl">
+                    <div class="rewards-item" style="background-image: url(@rewardItem.ThumbnailUrl);">
+                        <div class="reward-description">
+                            <div class="reward-description-content">
+                                <p>@rewardItem.Name</p>
+                                @Html.Bootstrap().Button().HtmlAttributes(new { @href = @rewardItem.RewardUrl }).Text("Saiba Mais!").Size(ButtonSize.Small).ButtonBlock()
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            }
+        }
+    }
+</div>
+<br/>
+
+<h3 class="special-title">
+    Top 5 @Model.Ranking.Type
+</h3>
+@using (Html.Bootstrap().Begin(new Table().Striped().Class("ranking-table")))
+{
+    for (int i = 0; i < 5; i++)
+    {
+        var ranking = Model.Ranking.Rankings[i];
+        
+        <tr class="ranking-info-block @{
+                                          if (ranking.CurrentUser)
+                                          {
+                                            <text> ranking-info-selected </text>
+                                          }
+                                      }">
+            <td class="ranking-number">@(i + 1)º</td>
+            <td class="ranking-portrait">
+                <p class="avatar-portrait" style="background-image: url(@ranking.AvatarUrl?width=150)"></p>
+            </td>
+            <td class="ranking-name text-name">@ranking.Name</td>
+            <td class="ranking-points">@ranking.Points</td>
+        </tr>
+    }
+}

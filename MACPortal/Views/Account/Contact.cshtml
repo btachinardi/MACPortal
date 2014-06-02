@@ -1,0 +1,23 @@
+﻿@model MACPortal.ViewModel.ContactVM
+
+@{
+    ViewBag.Title = "Contato";
+    Layout = "~/Views/Shared/_LayoutLogout.cshtml";
+}
+
+@section featured
+{
+    <img class="image-glow" src="../../Content/images/logo-with-products-small.png" alt="Mérito MAC"/>   
+}
+
+
+
+<h2>Entre em Contato Conosco</h2>
+<br/>
+<section id="loginForm" style="min-width: 400px;">
+    @{ Html.RenderPartial("_ContactPartial", Model); }
+</section>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

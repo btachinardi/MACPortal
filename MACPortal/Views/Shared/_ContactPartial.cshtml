@@ -1,0 +1,16 @@
+﻿@model MACPortal.ViewModel.ContactVM
+
+@using (var f = Html.Bootstrap().Begin(new Form().Type(FormType.Horizontal).InputWidthMd(9)))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    @f.FormGroup().TextBoxFor(m => m.Name).Disabled(Model.Name != null).Label().WidthMd(3)
+    @f.FormGroup().TextBoxFor(m => m.CPF).Disabled(Model.CPF != null).Label().WidthMd(3)
+    @f.FormGroup().TextBoxFor(m => m.Email).Disabled(Model.Email != null).Label().WidthMd(3)
+    @f.FormGroup().TextBoxFor(m => m.Title).Label().WidthMd(3)
+    @f.FormGroup().TextAreaFor(m => m.Message).Rows(10).Label().WidthMd(3)
+    
+    @Html.Bootstrap().SubmitButton().AppendIcon("glyphicon glyphicon-chevron-right").Text("Enviar").Size(ButtonSize.Large).ButtonBlock()
+
+}

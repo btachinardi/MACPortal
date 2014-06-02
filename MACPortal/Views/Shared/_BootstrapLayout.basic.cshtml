@@ -1,0 +1,118 @@
+@using System.Web.Optimization
+@using BootstrapSupport
+@using NavigationRoutes
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>@ViewBag.Title - Portal Campanha de Incentivo MAC @if (ViewBag.Section != null)
+                                                                 {
+                                                                    <text> | @ViewBag.Section</text>
+                                                                 }</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="@Styles.Url("~/content/css")" rel="stylesheet"/>
+        @RenderSection("head", required: false)
+        @Html.Partial("_html5shiv")
+        @* favicons and touch icons go here *@
+    </head>
+    <body>
+        <div class="container">
+            @RenderSection("header", required: false)
+        </div>
+
+        @if (ViewBag.InverseNavigation == null || !ViewBag.InverseNavigation)
+        {
+            <div class="container text-center">
+                @RenderSection("navigation", required: false)
+            </div>
+        }
+
+        <div class="container text-center">
+            @RenderSection("featured", required: false)
+            @Html.Partial("_alerts")
+            @Html.Partial("_validationSummary")
+            @RenderBody()   
+            <hr>
+            
+        </div>
+        @if (ViewBag.InverseNavigation != null && ViewBag.InverseNavigation)
+        {
+            <div class="container text-center">
+                @RenderSection("navigation", required: false)
+            </div>
+        }
+        
+        
+        <div><br/></div>
+        <div class="container navbar-nav navbar-inverse text-center" style="position: relative">
+            <img class="access-logo" src="../../Content/images/logo-access.png"/>
+            <div class="copyright">
+                <p class="text-white">&copy; Copyright @DateTime.Now.Year - MAC Construtora e Incorporadora - Todos os direitos reservados</p>
+            </div>
+        </div>
+        
+        <script type="text/javascript">
+            
+            window.onload = function () {
+                var elements = document.getElementsByClassName("text-name");
+                var i;
+                for (i = 0; i < elements.length; i++) {
+                    elements[i].innerHTML = elements[i].innerHTML.replace(/\b([a-zà-ú])([a-zà-ú]+)?\b/gim, "<span class='first-letter'>$1</span>$2")
+                }
+
+                $('.remove-col-lg-2').each(
+                    function(index) {
+                        $(this).removeClass('col-lg-2');
+                        //do stuff here for exemple...
+                    }
+                );
+                
+                $('.remove-btn-default').each(
+                    function(index) {
+                        $(this).removeClass('btn-default');
+                        //do stuff here for exemple...
+                    }
+                );
+                
+            }
+        </script>
+        
+        <style>
+        .text-name {
+            text-transform: lowercase;
+        }
+
+          .first-letter {
+              text-transform: uppercase;
+          }
+        </style>
+
+        @Scripts.Render("~/js")
+        
+        @RenderSection("Scripts", required: false)
+        
+        <script type="text/javascript">
+            $(function () {
+                $('.carousel').carousel({
+                    interval: 5000
+                }).on('slid.bs.carousel', function (e) {
+                    var $nextImage = $('.active.item', this).next('.item').find('img.lazy-event');
+                    $nextImage.trigger("load-image");
+                });
+            });
+
+            $(function () {
+                $("img.lazy-scroll").lazyload({
+                    effect: "fadeIn",
+                    threshold: 200
+                });
+
+                $("img.lazy-event").lazyload({
+                    event: "load-image",
+                    effect: "fadeIn"
+                });
+            });
+        </script>
+    </body>
+</html>
+

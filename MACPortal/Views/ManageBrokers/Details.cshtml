@@ -1,0 +1,254 @@
+﻿@model MACPortal.Models.Users.Broker
+
+@{
+    ViewBag.Title = "Detalhes do Corretor";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Detalhes do Corretor</h2>
+
+<fieldset>
+    <legend>Corretor</legend>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Manager)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Manager.Name)
+    </div>
+    
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.TempPoints)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.TempPoints)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Points)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Points)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Name)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Name)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.CPF)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.CPF)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Email)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Email)
+    </div>
+    
+    
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Birthday)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Birthday)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Gender)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Gender)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.ComercialName)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.ComercialName)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.AvatarHair)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.AvatarHair)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.AvatarHairColor)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.AvatarHairColor)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.AvatarSkinColor)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.AvatarSkinColor)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.AvatarFace)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.AvatarFace)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.AvatarCloth)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.AvatarCloth)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Accessory)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Accessory)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.HomePhonePrefix)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.HomePhonePrefix)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.HomePhone)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.HomePhone)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.CellPhonePrefix)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.CellPhonePrefix)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.CellPhone)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.CellPhone)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.CEP)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.CEP)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Street)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Street)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Number)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Number)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Complement)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Complement)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Neighborhood)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Neighborhood)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.City)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.City)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.State)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.State)
+    </div>
+    
+    <div class="display-label">
+        @Html.LabelFor(model => model.Sales)
+    </div>
+    <div class="display-field">
+        <p>
+            @Html.ActionLink("Cadastrar Nova Venda", "Create", "ManageSales");
+        </p>
+        @if (Model.Sales != null && Model.Sales.Any())
+        {
+            <table>
+                <tr>
+                    <th>Data</th>
+                    <th>Produto</th>
+                    <th>Valor</th>
+                    <th>Modificador</th>
+                    <th>Pontos</th>
+                    <th>Gerente</th>
+                    <th>Coordenador</th>
+                </tr>
+                @foreach (var item in Model.Sales)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SaleDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Enterprise.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Value)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Modifier)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Points)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Manager.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Coordinator.Name)
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+        else
+        {
+            <p>Não existem vendas relacionadas a este corretor.</p>
+        }
+        
+    </div>
+
+</fieldset>
+<p>
+    @Html.ActionLink("Editar", "Edit", new { id=Model.UserID }) |
+    @Html.ActionLink("Voltar para a Lista", "Index")
+</p>

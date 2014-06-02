@@ -1,0 +1,19 @@
+﻿@model MACPortal.ViewModel.MemberPointsVM
+@{
+    ViewBag.Title = "Minha Pontuação";
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+
+
+<br/>
+<h2 class="special-title">Minha Pontuação</h2>
+<br/>
+
+@Scripts.Render("~/js")
+<div class="points-container">
+    <div class="points-title">
+        Total de Pontos: <b>@Model.Employee.Points</b>
+    </div>
+    @(Model.Chart)
+</div>
+

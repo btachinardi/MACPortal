@@ -1,0 +1,30 @@
+﻿@model MACPortal.ViewModel.AvatarVM
+
+@{
+    ViewBag.Title = "Crie seu Avatar";
+    Layout = "~/Views/Shared/_LayoutAllUsers.cshtml";
+}
+
+<div class="image-glow">
+    <p>@Html.ActionLink("Portal Campanha de Incentivo MAC", "Index", "Member", new {@class = "portal-logo-left"})</p>
+</div>
+
+<section class="container navbar navbar-fixed-top avatar-container">
+    @{ Html.RenderPartial("_AvatarPortraitPartial"); }
+    <h3>
+        Personalize seu Avatar<br/>
+        @{ Html.RenderPartial("_AvatarNavbarPartial"); }
+    </h3>
+</section>
+
+<section class="container">
+    <div class="avatar-forms-header"></div>
+    <div class="container-narrow">
+        @{Html.RenderPartial("_AvatarFormPartial", Model);}
+    </div>
+</section>
+
+
+@section scripts {
+    @{Html.RenderPartial("_AvatarScriptsPartial", Model);}
+}

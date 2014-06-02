@@ -1,0 +1,55 @@
+﻿@model MACPortal.Models.Users.Broker
+
+@{
+    ViewBag.Title = "Deletar Corretor";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Deletar Corretor</h2>
+
+<h3>Você tem certeza que deseja deletar este corretor?</h3>
+<fieldset>
+    <legend>Corretor</legend>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Manager)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Manager.Name)
+    </div>
+    
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Points)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Points)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Name)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Name)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.CPF)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.CPF)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Email)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Email)
+    </div>
+</fieldset>
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    <p>
+        <input type="submit" value="Deletar" /> |
+        @Html.ActionLink("Voltar para a Lista", "Index")
+    </p>
+}

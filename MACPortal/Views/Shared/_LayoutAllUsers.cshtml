@@ -1,0 +1,12 @@
+﻿@{
+    //Layout = "~/Views/Shared/_Layout.cshtml"; 
+    Layout = "~/Views/Shared/_BootstrapLayout.basic.cshtml";
+}
+
+@section header
+{
+}
+
+@RenderBody()
+@section scripts { @RenderSection("scripts", required:false) }
+@section featured { @RenderSection("featured", required:false) }

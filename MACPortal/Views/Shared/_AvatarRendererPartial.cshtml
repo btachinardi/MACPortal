@@ -1,0 +1,392 @@
+﻿
+@Scripts.Render("~/Scripts/kinetic-v5.0.0.min.js")
+<script type="text/javascript" defer="defer">
+    
+    var avatar = new function() {
+    var WIDTH = 300;
+    var HEIGHT = 500;
+
+    var totalImages = 0;
+    var imagesLoaded = 0;
+    var ImageLoaded = function() {
+        imagesLoaded++;
+        if (imagesLoaded >= totalImages) {
+            Start();
+        }
+    };
+
+    var avatar = $("#avatar");
+    var loading = $("#loading");
+    var startCallback;
+
+    var _skinMaps, _noseSkinMaps, _eyesMaps, _hairMaps, _mouthMaps, _clothesMaps;
+        var hairBackCanvas;
+        var bodyCanvas;
+        var clothesCanvas;
+        var earsCanvas;
+        var faceCanvas;
+        var eyesCanvas;
+        var hairCanvas;
+        var noseCanvas;
+        var mouthCanvas;
+        var bodyAccessoryCanvas;
+        var faceAccessoryCanvas;
+        var headAccessoryCanvas;
+    
+    loading.slideDown();
+    avatar.slideUp();
+
+    var Start = function () {
+        $("#loading").slideUp();
+        $("#avatar").slideDown();
+        if (startCallback != null) {
+            startCallback();
+        }
+    };
+
+        function AvatarCanvas(container, imagesPath, imagesCount, colorMapping) {
+            var _imagesPath = imagesPath;
+            var _imagesCount = imagesCount;
+            var _colorMapping = colorMapping;
+            var _buffers = new Object();
+
+            var _absoluteDiv = document.createElement('div');
+            _absoluteDiv.setAttribute("style", "padding: 0px; margin: 0px; margin-left: auto; margin-right: auto; border: 0px; background-color: transparent; position: absolute; top: 0px; left: 50%; width: " + WIDTH + "px; height: " + HEIGHT + "px; background-position: initial initial; background-repeat: initial initial;");
+
+
+            var _canvas = document.createElement('canvas');
+            _canvas.setAttribute("width", "" + WIDTH);
+            _canvas.setAttribute("height", "" + HEIGHT);
+            _canvas.setAttribute("style", "position: relative; left: -50%");
+
+            var _context = _canvas.getContext("2d");
+            var _imagesData = new Array(imagesCount);
+            var _currentImage = -1;
+            var _currentColor = 0;
+
+            for (var i = 1; i <= _imagesCount; i++) {
+                AddImage(_imagesPath + i + ".png", i - 1);
+            }
+
+            function AddImage(imagePath, imageIndex) {
+                totalImages++;
+                var imageObj = new Image();
+                imageObj.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    canvas.setAttribute("width", "" + WIDTH);
+                    canvas.setAttribute("height", "" + HEIGHT);
+                    var context = canvas.getContext("2d");
+                    context.drawImage(imageObj, 0, 0, WIDTH, HEIGHT);
+                    AddCanvasImage(context.getImageData(0, 0, WIDTH, HEIGHT), imageIndex);
+                };
+                imageObj.src = imagePath;
+            }
+
+            function AddCanvasImage(imageData, imageIndex) {
+                _imagesData[imageIndex] = imageData;
+                if (_currentImage == -1 && imageIndex == 0) {
+                    SetImage(0);
+                }
+                ImageLoaded();
+            }
+
+            function SetImage(index) {
+                if (index == _currentImage) return;
+                if (index >= _imagesData.length) index = _imagesData.length - 1;
+                if (index < 0) index = 0;
+
+                _currentImage = index;
+                DrawImageToCanvas();
+            }
+
+            function NextImage() {
+                SetImage(_currentImage + 1);
+            }
+
+            function PreviousImage() {
+                SetImage(_currentImage - 1);
+            }
+
+            function SetColor(color) {
+                // if (color == _currentColor) return;
+                _currentColor = color;
+                DrawImageToCanvas();
+            }
+
+            function DrawImageToCanvas() {
+                var canvasData;
+               // if (_buffers[_currentImage + "-" + _currentColor] != null) {
+               //     canvasData = _buffers[_currentImage + "-" + _currentColor];
+               // } else {
+                    canvasData = _context.createImageData(WIDTH, HEIGHT);
+                    var imageData = _imagesData[_currentImage];
+                    PaintImage(canvasData.data, imageData.data);
+               //     _buffers[_currentImage + "-" + _currentColor] = canvasData;
+               // }
+                _context.putImageData(canvasData, 0, 0);
+            }
+
+            function PaintImage(target, source) {
+                if (_colorMapping != null)
+                    console.log("PAINTING WITH COLOR: R= " + _colorMapping[0].colors[0].r + ",G= " + _colorMapping[0].colors[0].g + ",B= " + _colorMapping[0].colors[0].b + "");
+                for (var index = 0; index < WIDTH * HEIGHT * 4; index += 4) {
+                    var targetR = source[index + 0];
+                    var targetG = source[index + 1];
+                    var targetB = source[index + 2];
+                    var targetA = source[index + 3];
+                    var colorNotMapped = true;
+
+                    if (_colorMapping != null && targetA > 0) {
+                        for (var u = 0; u < _colorMapping.length; u++) {
+                            for (var mi = 0; mi < _colorMapping[u].maps.length; mi++) {
+                                var mapColor = _colorMapping[u].maps[mi];
+
+                                var distR = targetR - mapColor.r;
+                                var distG = targetG - mapColor.g;
+                                var distB = targetB - mapColor.b;
+                                var distance = Math.abs(distR) + Math.abs(distG) + Math.abs(distB);
+                                if (distance < _colorMapping[u].distance) {
+                                    var color = _colorMapping[u].colors[_currentColor];
+
+                                    target[index + 0] = color.r;
+                                    target[index + 1] = color.g;
+                                    target[index + 2] = color.b;
+                                    target[index + 3] = targetA;
+                                    colorNotMapped = false;
+                                    break;
+                                }
+                            }
+                            if (!colorNotMapped) {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (colorNotMapped)
+                    {
+                        target[index + 0] = targetR;
+                        target[index + 1] = targetG;
+                        target[index + 2] = targetB;
+                        target[index + 3] = targetA;
+                    }
+                }
+            }
+
+            $(_absoluteDiv).append(_canvas);
+            container.append(_absoluteDiv);
+            var api = {
+                canvas: function () {
+                    return _canvas;
+                },
+                currentIndex: function () {
+                    return _currentImage;
+                },
+                SetColor: SetColor,
+                SetImage: SetImage,
+                NextImage: NextImage,
+                PreviousImage: PreviousImage
+            };
+            if (colorMapping != null) colorMapping[0].avatars.push(api);
+            return api;
+        }
+        
+
+        function FormatMap(targetMap) {
+            if (targetMap != null) {
+                for (var c = 0; c < targetMap.length; c++) {
+                    targetMap[c].map = ExtractColor(targetMap[c].map);
+                    for (var ci = 0; ci < targetMap[c].colors.length; ci++) {
+                        targetMap[c].colors[ci] = ExtractColor(targetMap[c].colors[ci]);
+                    }
+
+                    for (var cu = 0; cu < targetMap[c].maps.length; cu++) {
+                        targetMap[c].maps[cu] = ExtractColor(targetMap[c].maps[cu]);
+                    }
+                    targetMap[c].avatars = new Array();
+                }
+            }
+            return targetMap;
+        }
+
+        function ExtractColor(targetColor) {
+            return {
+                r: targetColor >> 16 & 0xFF,
+                g: targetColor >> 8 & 0xFF,
+                b: targetColor & 0xFF
+            };
+        }
+        
+        function LightenColor(color, percent) {
+            var amt = Math.round(2.55 * percent),
+            R = (color >> 16) + amt,
+            G = (color >> 8 & 0x00FF) + amt,
+            B = (color & 0x0000FF) + amt;
+            return (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255));
+        }
+        
+        function DarkenColor(color, percent) {
+            var amt = Math.round(2.55 * percent),
+            R = (color >> 16) - amt,
+            G = (color >> 8 & 0x00FF) - amt,
+            B = (color & 0x0000FF) - amt;
+            return (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255));
+        }
+        
+        function CreateMultiColorMap(maps, colors, distances) {
+            var mapping = new Array();
+            for (var i = 0; i < maps.length; i++) {
+                var colorsList = new Array();
+                for (var u = 0; u < colors.length; u++) {
+                    colorsList.push(LightenColor(colors[u], i * 6));
+                }
+                mapping.push({
+                    maps: [maps[i], LightenColor(maps[i], 10), DarkenColor(maps[i], 10)],
+                    colors: colorsList,
+                    distance: distances[i]
+                });
+            }
+            return mapping;
+        }
+        
+        function SetMapColor(map, colors, index) {
+            index = typeof index !== 'undefined' ? index : 0;
+            for (var i = index; i < colors.length + index; i++) {
+                map[i].colors[0] = ExtractColor(colors[i - index]);
+            }
+            for (var u = 0; u < map[0].avatars.length; u++) {
+                map[0].avatars[u].SetColor(0);
+            }
+        }
+
+        return {
+            SetHair: function (index) {
+                hairCanvas.SetImage(index);
+                hairBackCanvas.SetImage(index);
+            },
+            SetEyes: function (index) {
+                eyesCanvas.SetImage(index);
+            },
+            SetMouth: function (index) {
+                mouthCanvas.SetImage(index);
+            },
+            SetEars: function (index) {
+                earsCanvas.SetImage(index);
+            },
+            SetClothes: function (index) {
+                clothesCanvas.SetImage(index);
+            },
+            SetNose: function (index) {
+                noseCanvas.SetImage(index);
+            },
+            SetHeadAccessory: function (index) {
+                headAccessoryCanvas.SetImage(index);
+            },
+            SetFaceAccessory: function (index) {
+                faceAccessoryCanvas.SetImage(index);
+            },
+            SetBodyAccessory: function (index) {
+                bodyAccessoryCanvas.SetImage(index);
+            },
+            SetFace: function (index) {
+                faceCanvas.SetImage(index);
+            },
+            SetSkinColor: function (color) {
+                SetMapColor(_skinMaps, [color]);
+                SetMapColor(_noseSkinMaps, [DarkenColor(color, 6)]);
+                SetMapColor(_mouthMaps, [color]);
+            },
+            SetHairColor: function (color) {
+                SetMapColor(_hairMaps, [color, LightenColor(color, 6), LightenColor(color, 12)]);
+                SetMapColor(_eyesMaps, [color], 1);
+            },
+            SetEyesColor: function (color) {
+                SetMapColor(_eyesMaps, [color]);
+            },
+            SetMouthColor: function (color) {
+                SetMapColor(_mouthMaps, [color], 1);
+            },
+            SetClothesColor: function (color) {
+                SetMapColor(_clothesMaps, [color, LightenColor(color, 6)]);
+            },
+            GetImage: function() {
+                var copyCanvas = document.createElement('canvas');
+                copyCanvas.setAttribute("width", "" + WIDTH);
+                copyCanvas.setAttribute("height", "" + HEIGHT);
+
+                var copyContext = copyCanvas.getContext("2d");
+                var yOffset = -40;
+                copyContext.drawImage(hairBackCanvas.canvas(), 0, yOffset);
+                copyContext.drawImage(bodyCanvas.canvas(), 0, yOffset);
+                copyContext.drawImage(clothesCanvas.canvas(), 0, yOffset);
+                copyContext.drawImage(earsCanvas.canvas(), 0, yOffset);
+                copyContext.drawImage(faceCanvas.canvas(), 0, yOffset);
+                copyContext.drawImage(eyesCanvas.canvas(), 0, yOffset);
+                copyContext.drawImage(hairCanvas.canvas(), 0, yOffset);
+                copyContext.drawImage(noseCanvas.canvas(), 0, yOffset);
+                copyContext.drawImage(mouthCanvas.canvas(), 0, yOffset);
+                copyContext.drawImage(bodyAccessoryCanvas.canvas(), 0, yOffset);
+                copyContext.drawImage(faceAccessoryCanvas.canvas(), 0, yOffset);
+                copyContext.drawImage(headAccessoryCanvas.canvas(), 0, yOffset);
+                return copyCanvas.toDataURL("image/png");
+            },
+            Start: function (callback) {
+                
+                //_skinMaps = FormatMap([{ maps: [0xf9ddc1], colors: [0xA96358, 0xf9ddc1, 0xfde7db, 0xffe5af], distance: 150 }]);
+                //_noseSkinMaps = FormatMap([{ maps: [0xf9ddc1], colors: [0x7F4A41, 0xe4bd99, 0xf9bd9e, 0xb7922e], distance: 250 }]);
+                //_eyesMaps = FormatMap([{ maps: [0x5d3113], colors: [0x3e4095, 0x009916, 0x121415, 0xb7922e], distance: 50 }]);
+
+
+                _skinMaps = FormatMap(CreateMultiColorMap(
+                        [0xf9ddc1],
+                        [0xA96358],
+                        [150]
+                ));
+                
+                _noseSkinMaps = FormatMap(CreateMultiColorMap(
+                        [0xf9ddc1],
+                        [0xA96358],
+                        [250]
+                ));
+                
+                _clothesMaps = FormatMap(CreateMultiColorMap(
+                        [0x029a17, 0x6ac07c],
+                        [0x422824, 0x6ac07c],
+                        [150, 150]
+                ));
+
+                _mouthMaps = FormatMap(CreateMultiColorMap(
+                        [0xf9ddc1, 0xed3237],
+                        [0xA96358, 0x121415],
+                        [150, 150]
+                ));
+                
+                _eyesMaps = FormatMap(CreateMultiColorMap(
+                        [0x5d3113, 0xed3237],
+                        [0x3e4095, 0x121415],
+                        [50, 50]
+                ));
+                
+                _hairMaps = FormatMap(CreateMultiColorMap(
+                        [0xed3237, 0x009916, 0x0098da],
+                        [0x121415, 0xcc4ec2, 0x37ac20],
+                        [250, 175, 250]
+                ));
+
+                hairBackCanvas = new AvatarCanvas($("#avatar"), "../../Content/avatar/hair-back-", 12, _hairMaps);
+                bodyCanvas = new AvatarCanvas($("#avatar"), "../../Content/avatar/body-", 1, _skinMaps);
+                clothesCanvas = new AvatarCanvas($("#avatar"), "../../Content/avatar/clothes-", 9, _clothesMaps);
+                earsCanvas = new AvatarCanvas($("#avatar"), "../../Content/avatar/ears-", 7, _skinMaps);
+                faceCanvas = new AvatarCanvas($("#avatar"), "../../Content/avatar/face-", 8, _skinMaps);
+                eyesCanvas = new AvatarCanvas($("#avatar"), "../../Content/avatar/eyes-", 11, _eyesMaps);
+                noseCanvas = new AvatarCanvas($("#avatar"), "../../Content/avatar/nose-", 10, _noseSkinMaps);
+                mouthCanvas = new AvatarCanvas($("#avatar"), "../../Content/avatar/mouth-", 10, _mouthMaps);
+                faceAccessoryCanvas = new AvatarCanvas($("#avatar"), "../../Content/avatar/accessory-face-", 9);
+                hairCanvas = new AvatarCanvas($("#avatar"), "../../Content/avatar/hair-", 12, _hairMaps);
+                bodyAccessoryCanvas = new AvatarCanvas($("#avatar"), "../../Content/avatar/accessory-body-", 7);
+                headAccessoryCanvas = new AvatarCanvas($("#avatar"), "../../Content/avatar/accessory-head-", 7);
+                startCallback = callback;
+            }
+        };
+    }
+
+</script>

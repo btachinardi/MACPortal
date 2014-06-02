@@ -1,0 +1,83 @@
+﻿@model MACPortal.ViewModel.BaseMemberVM
+
+@{
+    ViewBag.Section = "Membro";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_BootstrapLayout.basic.cshtml";
+}
+
+@section header
+{
+    <div class="image-glow">
+        <p>@Html.ActionLink("Portal Campanha de Incentivo MAC", "Index", "Member", null, new {@class = "portal-logo portal-logo-small"})</p>
+    </div>
+}
+
+@section navigation
+{
+    @using (var nav = Html.Bootstrap().Begin(new Nav().Style(NavType.Pills).SetLinksActiveByControllerAndAction()))
+    {
+        @nav.ActionLink("Home", "Index", "Member")
+        @nav.ActionLink("Ranking", "Ranking", "Member")
+        @nav.ActionLink("Premiação", "Rewards", "Member")
+        @nav.ActionLink("Regulamento", "Regulation", "Member")
+        @nav.ActionLink("Fale Conosco", "Contact", "Member")
+    }
+}
+
+<div class="user-info">
+    <div class="user-info-block user-info-header">Meu Perfil</div>
+    <div class="user-info-block">
+        <ul>
+            <li class="avatar-portrait" style="background-image: url(@Model.Employee.AvatarUrl)"></li>
+            <li>
+                @Model.Employee.ComercialName
+            </li>
+        </ul>
+    </div>
+
+    <div class="user-info-block">
+        <ul>
+            <li>
+                @Html.Bootstrap().ActionLinkButton("Minha Pontuação", "Points")
+            </li>
+            <li>
+                @Html.Bootstrap().ActionLinkButton("Editar Perfil", "EditProfile")
+            </li>
+            <li>
+                @Html.Bootstrap().ActionLinkButton("Editar Avatar", "EditAvatar")
+            </li>
+            <li>
+                @Html.Bootstrap().ActionLinkButton("Mudar Senha", "ChangePassword")
+            </li>
+        </ul>
+    </div>
+    
+    <div class="user-info-block">
+        <ul>
+            <li class="stats-block">
+                <b>@(Model.Employee.Ranking)º</b>Colocação
+            </li>
+            <li class="stats-block">
+                <b>@Model.Employee.Points</b>Total de Pontos
+            </li>
+            <li class="stats-block">
+                <b>@Model.Employee.Sales</b>Total de Vendas
+            </li>
+        </ul>
+    </div>
+    <div class="user-info-block">
+        <ul>
+            <li>
+                @Html.Bootstrap().ActionLinkButton("Sair Desta Conta", "LogOff", "Account")
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="member-content">
+    @RenderBody()
+</div>
+            
+
+@section scripts { @RenderSection("scripts", required:false) }
+@section featured { @RenderSection("featured", required:false) }

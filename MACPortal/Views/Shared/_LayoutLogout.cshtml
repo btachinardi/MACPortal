@@ -1,0 +1,23 @@
+﻿@{
+    //Layout = "~/Views/Shared/_Layout.cshtml"; 
+    ViewBag.InverseNavigation = true;
+    Layout = "~/Views/Shared/_BootstrapLayout.basic.cshtml";
+}
+
+@section header
+{
+}
+
+@section navigation
+{
+    @using (var nav = Html.Bootstrap().Begin(new Nav().Style(NavType.Pills).SetLinksActiveByControllerAndAction()))
+    {
+        @nav.ActionLink("Login", "Login", "Account")
+        @nav.ActionLink("Esqueci Minha Senha", "ForgotPassword", "Account")
+        @nav.ActionLink("Fale Conosco", "Contact", "Account")
+    }
+}
+
+@RenderBody()
+@section scripts { @RenderSection("scripts", required:false) }
+@section featured { @RenderSection("featured", required:false) }

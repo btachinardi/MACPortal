@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>@ViewBag.Title - Portal Campanha de Incentivo MAC @if (ViewBag.Section != null)
+                                                                 {
+                                                                    <text> | @ViewBag.Section</text>
+                                                                 }</title>
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <meta name="viewport" content="width=device-width" />
+        @Styles.Render("~/Content/css")
+        @Scripts.Render("~/bundles/modernizr")
+    </head>
+    <body>
+        <header>
+            <div class="content-wrapper">
+                @RenderSection("header", required:true)
+            </div>
+        </header>
+        <div id="body">
+            @RenderSection("featured", required: true)
+            <section class="content-wrapper main-content clear-fix">
+                @RenderBody()
+            </section>
+        </div>
+        <footer>
+            <div class="content-wrapper">
+                <div class="float-left">
+                    <p>&copy; Copyright @DateTime.Now.Year - MAC Construtora e Incorporadora - Todos os direitos reservados</p>
+                </div>
+                
+                <div>
+                    @RenderSection("navigation", required:false)
+                </div>
+            </div>
+        </footer>
+
+        @Scripts.Render("~/bundles/jquery")
+        @RenderSection("scripts", required: true)
+    </body>
+</html>

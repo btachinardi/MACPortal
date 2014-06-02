@@ -1,0 +1,30 @@
+﻿@model MACPortal.ViewModel.AvatarVM
+
+<div id="avatar-form" hidden="true">
+    @using (var regular = Html.Bootstrap().Begin(new Form()))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        
+        @Html.HiddenFor(model => model.UserID)
+        <input id="AvatarFileInput" name="AvatarFile" type="text" value="" style="display:none">
+        @regular.FormGroup().Id("hair-form").HtmlAttributes(new { @style = "display:none" }).RadioButtonsFromEnumFor(model => model.AvatarHair).AsButtonGroup().InputHtmlAttributes(new { @onchange = "HairChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("face-form").HtmlAttributes(new { @style = "display:none" }).RadioButtonsFromEnumFor(model => model.AvatarFace).AsButtonGroup().InputHtmlAttributes(new { @onchange = "FaceChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("eyes-form").HtmlAttributes(new { @style = "display:none" }).RadioButtonsFromEnumFor(model => model.AvatarEyes).AsButtonGroup().InputHtmlAttributes(new { @onchange = "EyesChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("mouth-form").HtmlAttributes(new { @style = "display:none" }).RadioButtonsFromEnumFor(model => model.AvatarMouth).AsButtonGroup().InputHtmlAttributes(new { @onchange = "MouthChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("ears-form").HtmlAttributes(new { @style = "display:none" }).RadioButtonsFromEnumFor(model => model.AvatarEars).AsButtonGroup().InputHtmlAttributes(new { @onchange = "EarsChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("clothes-form").HtmlAttributes(new { @style = "display:none" }).RadioButtonsFromEnumFor(model => model.AvatarClothes).AsButtonGroup().InputHtmlAttributes(new { @onchange = "ClothesChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("nose-form").HtmlAttributes(new { @style = "display:none" }).RadioButtonsFromEnumFor(model => model.AvatarNose).AsButtonGroup().InputHtmlAttributes(new { @onchange = "NoseChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("accessory-head-form").HtmlAttributes(new { @style = "display:none" }).RadioButtonsFromEnumFor(model => model.AvatarAccessoryHead).AsButtonGroup().InputHtmlAttributes(new { @onchange = "AccHeadChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("accessory-face-form").HtmlAttributes(new { @style = "display:none" }).RadioButtonsFromEnumFor(model => model.AvatarAccessoryFace).AsButtonGroup().InputHtmlAttributes(new { @onchange = "AccFaceChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("accessory-body-form").HtmlAttributes(new { @style = "display:none" }).RadioButtonsFromEnumFor(model => model.AvatarAccessoryBody).AsButtonGroup().InputHtmlAttributes(new { @onchange = "AccBodyChange(this)" }).Label().Class("vertical-form-label")
+                
+        @regular.FormGroup().Id("skin-color-form").HtmlAttributes(new { @style = "display:none;" }).RadioButtonsFromEnumFor(model => model.AvatarSkinColor).AsButtonGroup().InputHtmlAttributes(new { @onchange = "SkinColorChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("hair-color-form").HtmlAttributes(new { @style = "display:none;" }).RadioButtonsFromEnumFor(model => model.AvatarHairColor).AsButtonGroup().InputHtmlAttributes(new { @onchange = "HairColorChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("clothes-color-form").HtmlAttributes(new { @style = "display:none;" }).RadioButtonsFromEnumFor(model => model.AvatarClothesColor).AsButtonGroup().InputHtmlAttributes(new { @onchange = "ClothesColorChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("eyes-color-form").HtmlAttributes(new { @style = "display:none;" }).RadioButtonsFromEnumFor(model => model.AvatarEyesColor).AsButtonGroup().InputHtmlAttributes(new { @onchange = "EyesColorChange(this)" }).Label().Class("vertical-form-label")
+        @regular.FormGroup().Id("mouth-color-form").HtmlAttributes(new { @style = "display:none;" }).RadioButtonsFromEnumFor(model => model.AvatarMouthColor).AsButtonGroup().InputHtmlAttributes(new { @onchange = "MouthColorChange(this)" }).Label().Class("vertical-form-label")
+
+        @Html.Bootstrap().SubmitButton().AppendIcon("glyphicon glyphicon-chevron-right").Text("Salvar").Class("register-bt").Size(ButtonSize.Large)
+    }
+</div>

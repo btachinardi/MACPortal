@@ -1,0 +1,23 @@
+﻿@using System.Web.Optimization
+@using BootstrapSupport
+@using Mvc.Mailer
+@using NavigationRoutes
+<!DOCTYPE html>
+<html lang="en">
+    <body>
+        <table style="color: #365b6f; font-size: 16px; width: 100%">
+            <tr>
+                <td ></td>
+                <td align="center" style="width: 450px;">
+                    @Html.InlineImage("logo", "Logo Mérito MAC")
+                    @RenderBody()   
+                </td>
+                <td ></td>
+            </tr>
+        </table>
+        <div style="background-color: #365b6f; color: #ffffff; text-align: center">
+            &copy; Copyright @DateTime.Now.Year - MAC Construtora e Incorporadora - Todos os direitos reservados
+        </div>
+    </body>
+</html>
+

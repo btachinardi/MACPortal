@@ -1,0 +1,74 @@
+﻿@model MACPortal.ViewModel.MemberRankingVM
+
+@{
+    ViewBag.Title = "Ranking";
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+<br/>
+<!--
+    <h3 class="special-title">
+        Ranking
+    </h3>
+-->
+
+<p>Última Atualização: @Model.LastUpdate.ToString("dd/MM/yyyy")</p>
+@using (var g = Html.Bootstrap().Begin(new ButtonGroup().HtmlAttributes(new { @style = "width:75%;margin-left:60px;" })))
+{
+    @g.Button().Id("start-control").Text("Corretores").HtmlAttributes(new { @onclick = "FormControlChange('brokers', this)", @style = "width:30%; min-width:130px;" })
+    @g.Button().Text("Gerentes").HtmlAttributes(new {@onclick = "FormControlChange('managers', this)", @style = "width:30%; min-width:115px;"})
+    @g.Button().Text("Coordenadores").HtmlAttributes(new {@onclick = "FormControlChange('coordinators', this)", @style = "width:30%; min-width:175px;"})
+}
+<section id ="brokers-ranking" style="display: none">
+    @{ Html.RenderPartial("_RankingTablePartial", Model.BrokersRanking); }
+</section>
+
+<section id ="managers-ranking" style="display: none">
+    @{ Html.RenderPartial("_RankingTablePartial", Model.ManagersRanking); }
+</section>
+
+<section id ="coordinators-ranking" style="display: none">
+    @{ Html.RenderPartial("_RankingTablePartial", Model.CoordinatorsRanking); }
+</section>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        $(function () {
+            $("#start-control").click();
+            //FormControlChange("brokers", document.findByName("start-control"));
+        });
+
+        var currentForms;
+        var currentFormsNames, currentButton;
+        var first;
+        function FormControlChange(formName, button) {
+            if (currentFormsNames == formName) return;
+            var i;
+            currentFormsNames = formName;
+            if (currentButton != null) {
+                currentButton.removeClass("active");
+            }
+            if (currentForms != null) {
+                for (i = 0; i < currentForms.length; i++) {
+                    currentForms[i].slideUp();
+                }
+            }
+
+            var formsNames = currentFormsNames.split(",");
+            currentButton = $(button);
+            currentForms = new Array();
+            for (i = 0; i < formsNames.length; i++) {
+                currentForms.push($("#" + formsNames[i] + "-ranking"));
+            }
+            if (currentButton != null) {
+                currentButton.addClass("active");
+            }
+            if (currentForms != null) {
+                for (i = 0; i < currentForms.length; i++) {
+                    currentForms[i].slideDown();
+                }
+            }
+        }
+    </script>
+}

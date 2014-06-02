@@ -1,0 +1,28 @@
+﻿@model MACPortal.Models.LoginModel
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_LayoutLogout.cshtml";
+}
+
+@section featured
+{
+    <img class="image-glow" src="../../Content/images/logo-with-products-small.png" alt="Mérito MAC"/>   
+}
+
+
+<section id="loginForm">
+@using (var f = Html.Bootstrap().Begin(new Form().Type(FormType.Horizontal)))
+{
+    @Html.AntiForgeryToken()
+
+    @f.FormGroup().TextBoxFor(m => m.UserName).ShowValidationMessage(false).Placeholder("Insira seu CPF");
+    @f.FormGroup().PasswordFor(m => m.Password).ShowValidationMessage(false).Placeholder("Primeiro acesso? Insira seu CPF");
+    @f.FormGroup().CheckBoxFor(m => m.RememberMe).ShowValidationMessage(false).Label().Class("remember-me");
+    @Html.Bootstrap().SubmitButton().AppendIcon("glyphicon glyphicon-chevron-right").Text("Entrar").Class("login-bt")
+}
+</section>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

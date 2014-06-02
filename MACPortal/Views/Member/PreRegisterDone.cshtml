@@ -1,0 +1,55 @@
+﻿@model MACPortal.ViewModel.UserVM
+
+@{
+    ViewBag.Title = "Bem Vindo";
+    Layout = "~/Views/Shared/_LayoutAllUsers.cshtml";
+}
+
+<img class="image-glow image-smaller" src="../../Content/images/logo-with-products-small.png"/><br/>
+
+<section class="container">
+    <h1>
+        <p class="text-name">Olá, @Model.Name</p>
+        Bem-Vindo(a) à <b>Campanha Mérito MAC!</b>
+    </h1>
+    <br />
+    <div class="container-narrow">
+        <p>
+            Prepare-se para ver o seu talento profissional reconhecido.<br/>            Chegou <b>Mérito MAC</b>, com muitos prêmios para você e sua família.<br/>            <b>Você já realizou seu pré-cadastro!</b>
+        </p>
+        <br />
+        @Html.Bootstrap().Button().HtmlAttributes(new { @onclick = "ShowForm()" }).Id("pre-register-bt").Text("Alterar Meus Dados").Size(ButtonSize.Large).ButtonBlock()
+        @Html.Bootstrap().ActionLinkButton("Alterar Meu Avatar", "PreAvatar").Size(ButtonSize.Large).ButtonBlock()
+        <br/>
+        @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" })) {
+            @Html.AntiForgeryToken()
+            <a href="javascript:document.getElementById('logoutForm').submit()">Entrar com outra conta</a>
+        }
+        <br/>
+        <br/>
+    </div>
+</section>
+
+<section id="pre-register-form" style="display: none">
+    
+    @{ Html.RenderPartial("_EditUserPartial", Model); }
+    <br/>
+        <p style="margin-left: 20%; width:100%;">Ao clicar em 'Salvar', afirmo que Li e Concordo com o @Html.Bootstrap().ActionLinkButton("Regulamento da Campanha", "Regulation", "Account").Size(ButtonSize.Mini).HtmlAttributes(new {@target = "_blank"})</p>
+</section>
+
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        function ShowForm() {
+            $("#pre-register-bt").slideUp();
+            $("#pre-register-form").slideDown();
+            $("#cpf-input").val(FormatCPF($("#cpf-input").val()));
+        }
+        
+        function FormatCPF(cpf) {
+            return cpf.substring(0, 3) + "." + cpf.substring(3, 6) + "." + cpf.substring(6, 9) + "-" + cpf.substring(9, 11);
+        }
+    </script>
+}

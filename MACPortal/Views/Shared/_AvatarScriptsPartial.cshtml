@@ -1,0 +1,187 @@
+﻿@using MACPortal.Extensions
+@model MACPortal.ViewModel.AvatarVM
+
+@Scripts.Render("~/bundles/jqueryval")
+    @{ Html.RenderPartial("_AvatarRendererPartial"); }
+    <script type="text/javascript">
+        $(function () {
+            avatar.Start(AvatarLoaded);
+        });
+
+        var loaded;
+        function AvatarLoaded() {
+            loaded = true;
+            FormControlChange('hair,hair-color', $("#hair-control"));
+            ColorizeForm($("#skin-color-form"));
+            ColorizeForm($("#mouth-color-form"));
+            ColorizeForm($("#hair-color-form"));
+            ColorizeForm($("#clothes-color-form"));
+            ColorizeForm($("#eyes-color-form"));
+
+            avatar.SetHair("@Model.AvatarHair".match(/(\d+)(?!.*\d)/)[0] - 1);
+            avatar.SetFace("@Model.AvatarFace".match(/(\d+)(?!.*\d)/)[0] - 1);
+            avatar.SetEyes("@Model.AvatarEyes".match(/(\d+)(?!.*\d)/)[0] - 1);
+            avatar.SetMouth("@Model.AvatarMouth".match(/(\d+)(?!.*\d)/)[0] - 1);
+            avatar.SetNose("@Model.AvatarNose".match(/(\d+)(?!.*\d)/)[0] - 1);
+            avatar.SetEars("@Model.AvatarEars".match(/(\d+)(?!.*\d)/)[0] - 1);
+            avatar.SetClothes("@Model.AvatarClothes".match(/(\d+)(?!.*\d)/)[0] - 1);
+            avatar.SetHeadAccessory("@Model.AvatarAccessoryHead".match(/(\d+)(?!.*\d)/)[0] - 1);
+            avatar.SetBodyAccessory("@Model.AvatarAccessoryBody".match(/(\d+)(?!.*\d)/)[0] - 1);
+            avatar.SetFaceAccessory("@Model.AvatarAccessoryFace".match(/(\d+)(?!.*\d)/)[0] - 1);
+
+            avatar.SetClothesColor(parseInt("@Model.AvatarClothesColor.DisplayName().Substring(0, 6)", 16));
+            avatar.SetEyesColor(parseInt("@Model.AvatarEyesColor.DisplayName().Substring(0, 6)", 16));
+            avatar.SetHairColor(parseInt("@Model.AvatarHairColor.DisplayName().Substring(0, 6)", 16));
+            avatar.SetMouthColor(parseInt("@Model.AvatarMouthColor.DisplayName().Substring(0, 6)", 16));
+            avatar.SetSkinColor(parseInt("@Model.AvatarSkinColor.DisplayName().Substring(0, 6)", 16));
+            
+            AvatarChanged();
+            $("#avatar-form").slideDown();
+        }
+        
+        function ColorizeForm(form) {
+            form.find(".btn").each(function () {
+                var $this = $(this);
+                var color = $this.text().substring(0,6);
+                $this.attr("data-color", color);
+                $this.attr("class", $this.attr("class") + " color-btn-container");
+                var colorDiv = document.createElement('div');
+                colorDiv.setAttribute("class", "color-btn");
+                colorDiv.setAttribute("style", 'color:transparent; background-color: #' + color + ';');
+                $this.contents().filter(function () {  //
+                    return this.nodeType == 3; //Node.TEXT_NODE
+                }).remove();
+                $this.append(colorDiv);
+            });
+        }
+
+        var currentForms;
+        var currentFormsNames, currentButton;
+        var first;
+        function FormControlChange(formName, button) {
+            if (!loaded) return;
+            if (currentFormsNames == formName) return;
+            var i;
+            currentFormsNames = formName;
+            if (currentButton != null) {
+                currentButton.removeClass("active");
+            }
+            if (currentForms != null) {
+                for (i = 0; i < currentForms.length; i++)
+                {
+                    currentForms[i].slideUp();
+                }
+            }
+            
+            var formsNames = currentFormsNames.split(",");
+            currentButton = $(button);
+            currentForms = new Array();
+            for (i = 0; i < formsNames.length; i++) {
+                currentForms.push($("#" + formsNames[i] + "-form"));
+            }
+            if (currentButton != null) {
+                currentButton.addClass("active");
+            }
+            if (currentForms != null) {
+                for (i = 0; i < currentForms.length; i++) {
+                    currentForms[i].slideDown();
+                }
+            }
+        }
+
+        function AvatarChanged() {
+            var image = avatar.GetImage();
+            image = image.replace('data:image/png;base64,', '');
+            $("#AvatarFileInput").val(image);
+        }
+
+        function HairChange(context) {
+            var targetIndex = context.value.match(/(\d+)(?!.*\d)/)[0] - 1;
+            avatar.SetHair(targetIndex);
+            AvatarChanged();
+        }
+        
+        function EarsChange(context) {
+            var targetIndex = context.value.match(/(\d+)(?!.*\d)/)[0] - 1;
+            avatar.SetEars(targetIndex);
+            AvatarChanged();
+        }
+        
+        function MouthChange(context) {
+            var targetIndex = context.value.match(/(\d+)(?!.*\d)/)[0] - 1;
+            avatar.SetMouth(targetIndex);
+            AvatarChanged();
+        }
+        
+        function ClothesChange(context) {
+            var targetIndex = context.value.match(/(\d+)(?!.*\d)/)[0] - 1;
+            avatar.SetClothes(targetIndex);
+            AvatarChanged();
+        }
+        
+        function NoseChange(context) {
+            var targetIndex = context.value.match(/(\d+)(?!.*\d)/)[0] - 1;
+            avatar.SetNose(targetIndex);
+            AvatarChanged();
+        }
+        
+        function EyesChange(context) {
+            var targetIndex = context.value.match(/(\d+)(?!.*\d)/)[0] - 1;
+            avatar.SetEyes(targetIndex);
+            AvatarChanged();
+        }
+        
+        function AccHeadChange(context) {
+            var targetIndex = context.value.match(/(\d+)(?!.*\d)/)[0] - 1;
+            avatar.SetHeadAccessory(targetIndex);
+            AvatarChanged();
+        }
+        
+        function AccBodyChange(context) {
+            var targetIndex = context.value.match(/(\d+)(?!.*\d)/)[0] - 1;
+            avatar.SetBodyAccessory(targetIndex);
+            AvatarChanged();
+        }
+        
+        function AccFaceChange(context) {
+            var targetIndex = context.value.match(/(\d+)(?!.*\d)/)[0] - 1;
+            avatar.SetFaceAccessory(targetIndex);
+            AvatarChanged();
+        }
+        
+        function FaceChange(context) {
+            var targetIndex = context.value.match(/(\d+)(?!.*\d)/)[0] - 1;
+            avatar.SetFace(targetIndex);
+            AvatarChanged();
+        }
+        
+        function SkinColorChange(context) {
+            var targetIndex = $(context).parent().attr("data-color");
+            avatar.SetSkinColor(parseInt(targetIndex, 16));
+            AvatarChanged();
+        }
+        
+        function HairColorChange(context) {
+            var targetIndex = $(context).parent().attr("data-color");
+            avatar.SetHairColor(parseInt(targetIndex, 16));
+            AvatarChanged();
+        }
+        
+        function ClothesColorChange(context) {
+            var targetIndex = $(context).parent().attr("data-color");
+            avatar.SetClothesColor(parseInt(targetIndex, 16));
+            AvatarChanged();
+        }
+        
+        function EyesColorChange(context) {
+            var targetIndex = $(context).parent().attr("data-color");
+            avatar.SetEyesColor(parseInt(targetIndex, 16));
+            AvatarChanged();
+        }
+
+        function MouthColorChange(context) {
+            var targetIndex = $(context).parent().attr("data-color");
+            avatar.SetMouthColor(parseInt(targetIndex, 16));
+            AvatarChanged();
+        }
+    </script>

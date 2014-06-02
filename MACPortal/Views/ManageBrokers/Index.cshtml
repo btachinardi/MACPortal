@@ -1,0 +1,61 @@
+﻿@model IEnumerable<MACPortal.Models.Users.Broker>
+
+@{
+    ViewBag.Title = "Corretores";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Corretores</h2>
+
+<p>
+    @Html.ActionLink("Criar Novo", "Create")
+</p>
+@using (Html.Bootstrap().Begin(new Table()))
+{
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Manager)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Points)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CPF)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th></th>
+    </tr>
+
+    foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Manager.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Points)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CPF)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @using (var g = Html.Bootstrap().Begin(new ButtonGroup()))
+                {
+                    @g.ActionLinkButton("Editar", "Edit").RouteValues(new { id = item.UserID })
+                    @g.ActionLinkButton("Detalhes", "Details").RouteValues(new { id = item.UserID })
+                    @g.ActionLinkButton("Deletar", "Delete").RouteValues(new { id = item.UserID })
+                }
+            </td>
+        </tr>
+    }
+}

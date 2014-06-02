@@ -1,0 +1,10 @@
+﻿@model MACPortal.ViewModel.MemberContactVM
+
+@{
+    ViewBag.Title = "Contato";
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+
+<h2>Entre em Contato Conosco</h2>
+<br/>
+@{ Html.RenderPartial("_ContactPartial", Model.Contact); }

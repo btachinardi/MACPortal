@@ -1,0 +1,26 @@
+﻿@model MACPortal.ViewModel.MemberEditAvatarVM
+
+@{
+    ViewBag.Title = "Edite seu Avatar";
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+
+<br/>
+<h2 class="special-title">Editar Avatar</h2>
+<br/>
+
+<section class="container-avatar-member navbar avatar-container">
+    @{ Html.RenderPartial("_AvatarPortraitPartial"); }
+    <h3>
+        @{ Html.RenderPartial("_AvatarNavbarPartial"); }
+    </h3>
+</section>
+
+<section class="container-avatar-member">
+    @{Html.RenderPartial("_AvatarFormPartial", Model.Avatar);}
+</section>
+
+
+@section scripts {
+    @{Html.RenderPartial("_AvatarScriptsPartial", Model.Avatar);}
+}
