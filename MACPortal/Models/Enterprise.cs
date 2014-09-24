@@ -12,10 +12,16 @@ namespace MACPortal.Models
     {
         public int EnterpriseID { get; set; }
 
+        public int Code { get; set; }
+
         [Required]
         public string Name { get; set; }
         public decimal Modifier { get; set; }
 
         public virtual ICollection<Coordinator> Coordinators { get; set; }
+
+        [NotMapped]
+        public virtual ICollection<Employee> CoordinatorsAsEmployees { get; set; }
+        
     }
 }

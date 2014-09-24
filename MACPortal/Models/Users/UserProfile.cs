@@ -48,6 +48,7 @@ namespace MACPortal.Models.Users
             TempPoints = baseEmployee.TempPoints;
             UserID = baseEmployee.UserID;
             CurrentAcceptedAgreement = baseEmployee.CurrentAcceptedAgreement;
+            BrokerType = baseEmployee.BrokerType;
             new UserVM().Start(baseEmployee).Finish(this, false);
             new AvatarVM().Start(baseEmployee, false).Finish(this);
             return this;
@@ -56,6 +57,7 @@ namespace MACPortal.Models.Users
         //Required
         [Key, ForeignKey("User")]
         public int UserID { get; set; }
+        public BrokerType BrokerType { get; set; }
 
         [Required]
         [Display(Name = "Nome")]
@@ -190,7 +192,6 @@ namespace MACPortal.Models.Users
     [Table("Broker")]
     public class Broker : Employee
     {
-        public BrokerType Type { get; set; }
         public int ManagerID { get; set; }
 
         [ForeignKey("ManagerID")]

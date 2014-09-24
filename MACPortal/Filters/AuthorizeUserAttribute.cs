@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Security;
+using MACPortal.DAL;
 using WebMatrix.WebData;
 
 namespace MACPortal.Filters

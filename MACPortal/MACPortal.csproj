@@ -320,6 +320,14 @@
     <Compile Include="Migrations\201405301916119_RemoveManagerConstraint.Designer.cs">
       <DependentUpon>201405301916119_RemoveManagerConstraint.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406112034007_EnterprisesCodes.cs" />
+    <Compile Include="Migrations\201406112034007_EnterprisesCodes.Designer.cs">
+      <DependentUpon>201406112034007_EnterprisesCodes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406112059052_BrokerTypeForAllEmployees.cs" />
+    <Compile Include="Migrations\201406112059052_BrokerTypeForAllEmployees.Designer.cs">
+      <DependentUpon>201406112059052_BrokerTypeForAllEmployees.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\Enterprise.cs" />
@@ -1006,6 +1014,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201405301916119_RemoveManagerConstraint.resx">
       <DependentUpon>201405301916119_RemoveManagerConstraint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406112034007_EnterprisesCodes.resx">
+      <DependentUpon>201406112034007_EnterprisesCodes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406112059052_BrokerTypeForAllEmployees.resx">
+      <DependentUpon>201406112059052_BrokerTypeForAllEmployees.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

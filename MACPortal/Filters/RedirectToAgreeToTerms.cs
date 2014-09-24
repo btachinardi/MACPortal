@@ -78,6 +78,16 @@ namespace MACPortal.Filters
                     });
                     filterContext.Result = new RedirectToRouteResult(routeValues);
                 }
+                else if (!userEmployee.Active && !userEmployee.ComercialName.Contains("[ADM]"))
+                {
+
+                    filterContext.Result = new RedirectToRouteResult(
+                    new RouteValueDictionary
+                     {
+                         { "controller", "Account" },
+                         { "action", "AccessDenied" }
+                     });
+                }
             }
         }
     }

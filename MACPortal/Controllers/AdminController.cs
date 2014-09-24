@@ -91,7 +91,9 @@ namespace MACPortal.Controllers
             var coord = (Coordinator)db.Employees.FirstOrDefault(e => e is Coordinator && e.ComercialName.ToUpper() == name.ToUpper());
             if (coord == null)
             {
-                return HttpNotFound();
+                var contentNull = db.Enterprises.ToList().Aggregate("Empreendimentos: ", (current, enterprise) => current + (enterprise.Name + ", "));
+                Success(contentNull);
+                return RedirectToAction("Index");
             }
             var content = coord.Enterprises.Aggregate("Empreendimentos: ", (current, enterprise) => current + (enterprise.Name + ", "));
             Success(content);
@@ -106,13 +108,13 @@ namespace MACPortal.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult CleanEnterprises()
+        public ActionResult CleanEnterprises(bool allEnterprises = false)
         {
             var entreprisesNames = new List<string>();
             var removeCount = 0;
             foreach (var enterprise in db.Enterprises)
             {
-                if (entreprisesNames.Contains(enterprise.Name))
+                if (entreprisesNames.Contains(enterprise.Name) || allEnterprises)
                 {
                     db.Enterprises.Remove(enterprise);
                     removeCount++;
@@ -130,12 +132,14 @@ namespace MACPortal.Controllers
         public ActionResult ResetSales()
         {
             db.Sales.RemoveRange(db.Sales);
+            db.Employees.ForEach(e => e.TempPoints = 0);
             db.SaveChanges();
             Success("As vendas foram reiniciadas com sucesso!");
             return RedirectToAction("Index");
         }
 
 
+        Dictionary<string, string[]> alias = new Dictionary<string, string[]>();
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ImportExcell(HttpPostedFileBase Excell)
@@ -195,15 +199,28 @@ namespace MACPortal.Controllers
                                         sheetHeaders.Add((string)cellValue,
                                             columnNumber);
                                     }
+                                    onlineCoordinatorName =
+                                                currentWorksheet.Cells[2, sheetHeaders["Coordenador Online"]]
+                                                    .Value.ToString()
+                                                    .Trim();
                                     for (rowNumber = 2; rowNumber <= currentWorksheet.Dimension.End.Row; rowNumber++)
                                     {
-                                        if (currentWorksheet.Cells[rowNumber, 1].Value == null)
+                                        if (currentWorksheet.Cells[rowNumber, 2].Value == null)
                                         {
                                             continue;
                                         }
-
-                                        onlineCoordinatorName = currentWorksheet.Cells[rowNumber, sheetHeaders["Coordenador Online"]].Value.ToString()
-                                                .Trim();
+                                        if (sheetHeaders.ContainsKey("Alias"))
+                                        {
+                                            var rawAlias = currentWorksheet.Cells[rowNumber, sheetHeaders["Alias"]].Value.ToString()
+                                                .Trim().Split(';');
+                                            var aliasKey = rawAlias[0];
+                                            var aliasList = new List<string>();
+                                            for (int i = 1; i < rawAlias.Length; i++)
+                                            {
+                                                aliasList.Add(rawAlias[i]);
+                                            }
+                                            alias[aliasKey] = aliasList.ToArray();
+                                        }
                                     }
                                 }
 
@@ -212,6 +229,9 @@ namespace MACPortal.Controllers
                                 currentWorksheet = workBook.Worksheets.FirstOrDefault(e => e.Name == "Coordenadores");
                                 if (currentWorksheet != null)
                                 {
+                                    //If the coordinators table is in this sheet, reset all employees active status
+                                    db.Employees.ForEach(e => e.Active = false);
+
                                     sheetHeaders = new Dictionary<string, int>();
                                     for (columnNumber = 1;
                                          columnNumber <= currentWorksheet.Dimension.End.Column;
@@ -234,7 +254,13 @@ namespace MACPortal.Controllers
                                                                                                            String.Empty)
                                                                                                   .Trim();
                                         var employee = GetEmployee<Coordinator>(CPF);
-
+                                        var brokerTypeRaw =
+                                            currentWorksheet.Cells[rowNumber, sheetHeaders["Tipo"]].Value.ToString().ToUpper();
+                                        employee.BrokerType = brokerTypeRaw == "ONLINE"
+                                                           ? BrokerType.ONLINE
+                                                           : (brokerTypeRaw == "PRESENCIAL"
+                                                                  ? BrokerType.PRESENCIAL
+                                                                  : BrokerType.INVALID);
                                         if (String.IsNullOrEmpty(employee.Name)) employee.Name =
                                             currentWorksheet.Cells[rowNumber, sheetHeaders["Nome Completo"]].Value
                                                                                                             .ToString()
@@ -273,6 +299,7 @@ namespace MACPortal.Controllers
                                 currentWorksheet = workBook.Worksheets.FirstOrDefault(e => e.Name == "Gerentes");
                                 if (currentWorksheet != null)
                                 {
+
                                     sheetHeaders = new Dictionary<string, int>();
                                     for (columnNumber = 1;
                                          columnNumber <= currentWorksheet.Dimension.End.Column;
@@ -295,6 +322,14 @@ namespace MACPortal.Controllers
                                                                                                            String.Empty)
                                                                                                   .Trim();
                                         var employee = GetEmployee<Manager>(CPF);
+
+                                        var brokerTypeRaw =
+                                            currentWorksheet.Cells[rowNumber, sheetHeaders["Tipo"]].Value.ToString().ToUpper();
+                                        employee.BrokerType = brokerTypeRaw == "ONLINE"
+                                                           ? BrokerType.ONLINE
+                                                           : (brokerTypeRaw == "PRESENCIAL"
+                                                                  ? BrokerType.PRESENCIAL
+                                                                  : BrokerType.INVALID);
 
                                         if (String.IsNullOrEmpty(employee.Name))employee.Name =
                                             currentWorksheet.Cells[rowNumber, sheetHeaders["Nome Completo"]].Value
@@ -395,7 +430,7 @@ namespace MACPortal.Controllers
                                         employee.Active =
                                             currentWorksheet.Cells[rowNumber, sheetHeaders["Ativo"]].Value.ToString()
                                                                                                      .Trim() == "SIM";
-                                        employee.Type = brokerType;
+                                        employee.BrokerType = brokerType;
                                         if (db.Employees.Any(e => e is Broker && e.CPF == CPF))
                                         {
                                             db.Employees.Attach(employee);
@@ -442,20 +477,17 @@ namespace MACPortal.Controllers
                                         strCoordinators = strCoordinators == null
                                                               ? null
                                                               : strCoordinators.Trim().ToUpper();
-                                        var eCoordinators = new List<Coordinator>();
+                                        var eCoordinators = new List<Employee>();
                                         if (!String.IsNullOrEmpty(strCoordinators))
                                         {
                                             var coordinatorsNames = strCoordinators.Split(';');
                                             foreach (var coordinatorsName in coordinatorsNames)
                                             {
-                                                foreach (var coordinator in coordinators)
+                                                var targetName = coordinatorsName.Trim();
+                                                var employee = GetEmployeeWithAlias(targetName);
+                                                if (employee != null)
                                                 {
-                                                    var targetName = coordinatorsName.Trim();
-                                                    var possibleName = coordinator.ComercialName;
-                                                    if (targetName == possibleName)
-                                                    {
-                                                        eCoordinators.Add(coordinator);
-                                                    }
+                                                    eCoordinators.Add(employee);
                                                 }
                                             }
                                         }
@@ -463,10 +495,10 @@ namespace MACPortal.Controllers
                                             Convert.ToInt32(
                                                 currentWorksheet.Cells[rowNumber, sheetHeaders["Código"]].Value);
                                         var enterprise =
-                                            db.Enterprises.SingleOrDefault(e => e.EnterpriseID == modelId) ??
+                                            db.Enterprises.SingleOrDefault(e => e.Code == modelId) ??
                                             new Enterprise
                                                 {
-                                                    EnterpriseID = modelId
+                                                    Code = modelId
                                                 };
                                         
 
@@ -482,10 +514,10 @@ namespace MACPortal.Controllers
                                                 Convert.ToDecimal(
                                                     currentWorksheet.Cells[rowNumber, sheetHeaders["Modificador"]].Value);
 
-                                            enterprise.Coordinators.Clear();
+                                            enterprise.CoordinatorsAsEmployees = new Collection<Employee>();
                                             foreach (var eCoordinator in eCoordinators)
                                             {
-                                                enterprise.Coordinators.Add(eCoordinator);
+                                                enterprise.CoordinatorsAsEmployees.Add(eCoordinator);
                                             }
                                             ((IObjectContextAdapter) db).ObjectContext.ObjectStateManager
                                                                         .ChangeObjectState(enterprise,
@@ -501,13 +533,13 @@ namespace MACPortal.Controllers
                                                 Convert.ToDecimal(
                                                     currentWorksheet.Cells[rowNumber, sheetHeaders["Modificador"]].Value);
 
-                                            if (enterprise.Coordinators == null)
+                                            if (enterprise.CoordinatorsAsEmployees == null)
                                             {
-                                                enterprise.Coordinators = new Collection<Coordinator>();
+                                                enterprise.CoordinatorsAsEmployees = new Collection<Employee>();
                                             }
                                             foreach (var eCoordinator in eCoordinators)
                                             {
-                                                enterprise.Coordinators.Add(eCoordinator);
+                                                enterprise.CoordinatorsAsEmployees.Add(eCoordinator);
                                             }
                                             db.Enterprises.Add(enterprise);
                                         }
@@ -528,6 +560,8 @@ namespace MACPortal.Controllers
                                          columnNumber <= currentWorksheet.Dimension.End.Column;
                                          columnNumber++)
                                     {
+                                        if ((string)currentWorksheet.Cells[1, columnNumber].Value == null) continue;
+                                        
                                         sheetHeaders.Add((string) currentWorksheet.Cells[1, columnNumber].Value,
                                                          columnNumber);
                                     }
@@ -560,7 +594,7 @@ namespace MACPortal.Controllers
                                             currentWorksheet.Cells[rowNumber, sheetHeaders["Tipo de Venda"]].Value
                                                                                                             .ToString()
                                                                                                             .ToUpper();
-                                        var saleType = saleTypeRaw == "DIRETA"
+                                        var saleType = saleTypeRaw == "DIRETA" || saleTypeRaw == "SALÃO"
                                                            ? SaleType.DIRECT
                                                            : (saleTypeRaw == "TERCEIROS"
                                                                   ? SaleType.THIRD_PARTY
@@ -600,12 +634,11 @@ namespace MACPortal.Controllers
                                          * BROKER AND THIRD PARTY COORDINATOR
                                          */
                                         var brokerName = brokerNameRaw.ToString().ToUpper();
-                                        Coordinator thirdPartyCoordinator = null;
-                                        Broker broker = null;
+                                        Employee thirdPartyCoordinator = null;
+                                        Employee broker = null;
                                         if (saleType == SaleType.DIRECT)
                                         {
-                                            broker = 
-                                            (Broker) db.Employees.SingleOrDefault(e => e.ComercialName.ToUpper() == brokerName);
+                                            broker = GetEmployeeWithAlias(brokerName);
                                             if (broker == null)
                                             {
                                                 throw new InvalidDataException(String.Format("Could not find broker with name '{0}'", brokerName));
@@ -616,12 +649,9 @@ namespace MACPortal.Controllers
                                             var thirdPartyCoordinatorName = brokerName.Trim();
                                             try
                                             {
-                                                thirdPartyCoordinator =
-                                                    (Coordinator)
-                                                        db.Employees.SingleOrDefault(
-                                                            e => e.ComercialName.ToUpper() == thirdPartyCoordinatorName);
+                                                thirdPartyCoordinator = GetEmployeeWithAlias(thirdPartyCoordinatorName);
                                             }
-                                            catch (Exception)
+                                            catch (Exception e)
                                             {
                                                 throw new InvalidDataException(String.Format(
                                                     "Found more than one third party coordinator with name '{0}'",
@@ -642,7 +672,7 @@ namespace MACPortal.Controllers
                                         Employee manager;
                                         try
                                         {
-                                            manager = db.Employees.SingleOrDefault(e => e.ComercialName.ToUpper() == managerName);
+                                            manager = GetEmployeeWithAlias(managerName);
                                         }
                                         catch (Exception)
                                         {
@@ -672,7 +702,7 @@ namespace MACPortal.Controllers
                                          */
                                         var enterpriseName =
                                             currentWorksheet.Cells[rowNumber, sheetHeaders["Empreendimento"]]
-                                                .Value.ToString().ToUpper();
+                                                .Value.ToString().ToUpper().Trim();
                                         if (enterpriseName == "AVANTI CLUBE") continue;
                                         Enterprise enterprise;
                                         try
@@ -690,7 +720,7 @@ namespace MACPortal.Controllers
                                         var coordinatorsNamesRaw = sheetHeaders.ContainsKey("Coord. Access") ? currentWorksheet.Cells[
                                             rowNumber, sheetHeaders["Coord. Access"]].Value.ToString().
                                             Trim().ToUpper() : "XX";
-                                        var eCoordinators = enterprise.Coordinators.Cast<Employee>().ToList();
+                                        var eCoordinators = enterprise.CoordinatorsAsEmployees.ToList();
                                         if (!(String.IsNullOrEmpty(coordinatorsNamesRaw) || coordinatorsNamesRaw == "XX"))
                                         {
                                             var coordinatorsNames = coordinatorsNamesRaw.Split('/');
@@ -707,9 +737,7 @@ namespace MACPortal.Controllers
                                         {
                                             try
                                             {
-                                                onlineCoordinator =
-                                                    db.Employees.Single(
-                                                        e => e.ComercialName.ToUpper() == onlineCoordinatorName);
+                                                onlineCoordinator = GetEmployeeWithAlias(onlineCoordinatorName);
                                             }
                                             catch (Exception)
                                             {
@@ -720,7 +748,7 @@ namespace MACPortal.Controllers
                                         }
                                         else
                                         {
-                                            throw new Exception("No Online Coordinator was specified in the 'Global' worksheet!");
+                                            //throw new Exception("No Online Coordinator was specified in the 'Global' worksheet!");
                                         }
 
                                         /**
@@ -740,9 +768,19 @@ namespace MACPortal.Controllers
                                                 currentWorksheet.Cells[rowNumber, sheetHeaders["Data"]].Value
                                                                                                                 .ToString
                                                                                                                 () : "01/01/1900");
-                                        var value =
-                                            Convert.ToDecimal(
-                                                currentWorksheet.Cells[rowNumber, sheetHeaders["VGV"]].Value.ToString());
+                                        decimal value;
+                                        var valueAsString =
+                                            currentWorksheet.Cells[rowNumber, sheetHeaders["VGV"]].Value.ToString().Trim();
+                                        try
+                                        {
+                                            value = Convert.ToDecimal(valueAsString);
+                                        }
+                                        catch (Exception)
+                                        {
+                                            
+                                            throw new Exception(String.Format(
+                                                "Failed to parse String to Decimal: '{0}' in row: '{1}'", valueAsString, rowNumber));
+                                        }
 
                                         /**
                                          * CODE ID
@@ -780,9 +818,15 @@ namespace MACPortal.Controllers
                                             if (saleType == SaleType.DIRECT && broker != null)
                                             {
                                                 sale.BrokerID = broker.UserID;
-                                                sale.ManagerID = broker.ManagerID;
+                                                sale.ManagerID = manager.UserID;
                                                 sale.Employees.Add(broker);
-                                                sale.Employees.Add(broker.Manager);
+                                                sale.Employees.Add(manager);
+
+                                                if (onlineCoordinator != null && broker.BrokerType == BrokerType.ONLINE)
+                                                {
+                                                    sale.Employees.Add(onlineCoordinator);
+                                                    sale.OnlineCoordinatorID = onlineCoordinator.UserID;
+                                                }
                                             }
                                             else if (saleType == SaleType.THIRD_PARTY)
                                             {
@@ -790,12 +834,12 @@ namespace MACPortal.Controllers
                                                 sale.ManagerID = manager.UserID;
                                                 sale.Employees.Add(thirdPartyCoordinator);
                                                 sale.Employees.Add(manager);
-                                            }
 
-                                            if (onlineCoordinator != null)
-                                            {
-                                                sale.Employees.Add(onlineCoordinator);
-                                                sale.OnlineCoordinatorID = onlineCoordinator.UserID;
+                                                if (onlineCoordinator != null && thirdPartyCoordinator.BrokerType == BrokerType.ONLINE)
+                                                {
+                                                    sale.Employees.Add(onlineCoordinator);
+                                                    sale.OnlineCoordinatorID = onlineCoordinator.UserID;
+                                                }
                                             }
 
                                             sale.NumberOfCoordinators = eCoordinators.Count;
@@ -834,6 +878,16 @@ namespace MACPortal.Controllers
                                                 sale.ManagerID = manager.UserID;
                                                 sale.Employees.Add(broker);
                                                 sale.Employees.Add(manager);
+
+                                                if (onlineCoordinator != null && broker.BrokerType == BrokerType.ONLINE)
+                                                {
+                                                    sale.Employees.Add(onlineCoordinator);
+                                                    sale.OnlineCoordinatorID = onlineCoordinator.UserID;
+                                                }
+                                                else
+                                                {
+                                                    sale.OnlineCoordinatorID = 0;
+                                                }
                                             }
                                             else if (saleType == SaleType.THIRD_PARTY)
                                             {
@@ -842,22 +896,22 @@ namespace MACPortal.Controllers
                                                 sale.ManagerID = manager.UserID;
                                                 sale.Employees.Add(thirdPartyCoordinator);
                                                 sale.Employees.Add(manager);
+
+                                                if (onlineCoordinator != null && thirdPartyCoordinator.BrokerType == BrokerType.ONLINE)
+                                                {
+                                                    sale.Employees.Add(onlineCoordinator);
+                                                    sale.OnlineCoordinatorID = onlineCoordinator.UserID;
+                                                }
+                                                else
+                                                {
+                                                    sale.OnlineCoordinatorID = 0;
+                                                }
                                             }
                                             else
                                             {
                                                 sale.ThirdPartyCoordinatorID = 0;
                                                 sale.BrokerID = 0;
                                                 sale.ManagerID = 0;
-                                            }
-
-                                            if (onlineCoordinator != null)
-                                            {
-                                                sale.Employees.Add(onlineCoordinator);
-                                                sale.OnlineCoordinatorID = onlineCoordinator.UserID;
-                                            }
-                                            else
-                                            {
-                                                sale.OnlineCoordinatorID = 0;
                                             }
 
                                             if (eCoordinators != null)
@@ -880,6 +934,45 @@ namespace MACPortal.Controllers
 
                                     db.SaveChanges();
 
+                                }
+
+
+
+                                //Indications
+                                currentWorksheet = workBook.Worksheets.FirstOrDefault(e => e.Name == "Indicações");
+                                if (currentWorksheet != null)
+                                {
+                                    sheetHeaders = new Dictionary<string, int>();
+                                    for (columnNumber = 1;
+                                         columnNumber <= currentWorksheet.Dimension.End.Column;
+                                         columnNumber++)
+                                    {
+                                        sheetHeaders.Add((string)currentWorksheet.Cells[1, columnNumber].Value,
+                                                         columnNumber);
+                                    }
+                                    for (rowNumber = 2; rowNumber <= currentWorksheet.Dimension.End.Row; rowNumber++)
+                                    {
+                                        if (currentWorksheet.Cells[rowNumber, 1].Value == null)
+                                        {
+                                            continue;
+                                        }
+                                        var employeeName =
+                                            currentWorksheet.Cells[rowNumber, sheetHeaders["Nome"]].Value.ToString().Trim();
+                                        var indicatedName =
+                                            currentWorksheet.Cells[rowNumber, sheetHeaders["Indicado"]].Value.ToString().Trim();
+                                        var date = Convert.ToDateTime(
+                                            currentWorksheet.Cells[rowNumber, sheetHeaders["Data"]].Value.ToString().Trim());
+                                        var points = Convert.ToInt32(
+                                            currentWorksheet.Cells[rowNumber, sheetHeaders["Pontos"]].Value.ToString().Trim());
+                                        var employee = GetEmployeeWithAlias(employeeName);
+                                        employee.TempPoints += points;
+                                        UpdateModel(employee);
+                                        db.Employees.Attach(employee);
+                                        ((IObjectContextAdapter)db).ObjectContext.ObjectStateManager
+                                                                    .ChangeObjectState(employee,
+                                                                                       EntityState.Modified);
+                                    }
+                                    db.SaveChanges();
                                 }
                             }
                         }
@@ -918,6 +1011,30 @@ namespace MACPortal.Controllers
             }
             Error("Arquivo inválido ou não existente!");
             return RedirectToAction("Index");
+        }
+
+        private Employee GetEmployeeWithAlias(string employeeName, bool activeStatus = true)
+        {
+            var employee = db.Employees.SingleOrDefault(e => e.ComercialName.ToUpper() == employeeName && e.Active == activeStatus);
+            if (employee == null && alias.ContainsKey(employeeName))
+            {
+                foreach (var aliasName in alias[employeeName])
+                {
+                    employee =
+                        db.Employees.SingleOrDefault(
+                            e => e.ComercialName.ToUpper() == aliasName && e.Active == activeStatus);
+                    if (employee != null) break;
+                }
+            }
+            if (employee == null)
+            {
+                if (activeStatus)
+                {
+                    return GetEmployeeWithAlias(employeeName, false);
+                }
+                throw new Exception("Could not find Employee with name '" + employeeName + "'");
+            }
+            return employee;
         }
 
         private T GetEmployee<T>(string cpf) where T : Employee, new()
