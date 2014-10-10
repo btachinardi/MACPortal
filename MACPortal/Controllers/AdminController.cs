@@ -669,24 +669,28 @@ namespace MACPortal.Controllers
                                         var managerName =
                                             currentWorksheet.Cells[rowNumber, sheetHeaders["Gerente"]].Value.ToString()
                                                                                                       .ToUpper();
-                                        Employee manager;
-                                        try
+                                        Employee manager = null;
+                                        if (managerName != "XX")
                                         {
-                                            manager = GetEmployeeWithAlias(managerName);
+                                            try
+                                            {
+                                                manager = GetEmployeeWithAlias(managerName);
+                                            }
+                                            catch (Exception)
+                                            {
+                                                throw new InvalidDataException(String.Format(
+                                                    "Found more than one manager with name '{0}'",
+                                                    managerName));
+                                            }
+                                            if (manager == null)
+                                            {
+                                                throw new InvalidDataException(String.Format(
+                                                    "Could not find manager with name '{0}'",
+                                                    managerName)
+                                                    );
+                                            }
                                         }
-                                        catch (Exception)
-                                        {
-                                            throw new InvalidDataException(String.Format(
-                                                "Found more than one manager with name '{0}'",
-                                                managerName));
-                                        }
-                                        if (manager == null)
-                                        {
-                                            throw new InvalidDataException(String.Format(
-                                                "Could not find manager with name '{0}'",
-                                                managerName)
-                                                );
-                                        }
+
                                         /*
                                         if (broker != null && (saleType == SaleType.DIRECT && manager.UserID != broker.Manager.UserID))
                                         {
@@ -818,10 +822,13 @@ namespace MACPortal.Controllers
                                             if (saleType == SaleType.DIRECT && broker != null)
                                             {
                                                 sale.BrokerID = broker.UserID;
-                                                sale.ManagerID = manager.UserID;
                                                 sale.Employees.Add(broker);
-                                                sale.Employees.Add(manager);
+                                                if (manager != null)
+                                                {
+                                                    sale.ManagerID = manager.UserID;
+                                                    sale.Employees.Add(manager);
 
+                                                }
                                                 if (onlineCoordinator != null && broker.BrokerType == BrokerType.ONLINE)
                                                 {
                                                     sale.Employees.Add(onlineCoordinator);
@@ -831,10 +838,13 @@ namespace MACPortal.Controllers
                                             else if (saleType == SaleType.THIRD_PARTY)
                                             {
                                                 sale.ThirdPartyCoordinatorID = thirdPartyCoordinator.UserID;
-                                                sale.ManagerID = manager.UserID;
                                                 sale.Employees.Add(thirdPartyCoordinator);
-                                                sale.Employees.Add(manager);
+                                                if (manager != null)
+                                                {
+                                                    sale.ManagerID = manager.UserID;
+                                                    sale.Employees.Add(manager);
 
+                                                }
                                                 if (onlineCoordinator != null && thirdPartyCoordinator.BrokerType == BrokerType.ONLINE)
                                                 {
                                                     sale.Employees.Add(onlineCoordinator);
@@ -875,9 +885,13 @@ namespace MACPortal.Controllers
                                             {
                                                 sale.ThirdPartyCoordinatorID = 0;
                                                 sale.BrokerID = broker.UserID;
-                                                sale.ManagerID = manager.UserID;
                                                 sale.Employees.Add(broker);
-                                                sale.Employees.Add(manager);
+                                                if (manager != null)
+                                                {
+                                                    sale.ManagerID = manager.UserID;
+                                                    sale.Employees.Add(manager);
+
+                                                }
 
                                                 if (onlineCoordinator != null && broker.BrokerType == BrokerType.ONLINE)
                                                 {
@@ -893,9 +907,13 @@ namespace MACPortal.Controllers
                                             {
                                                 sale.BrokerID = 0;
                                                 sale.ThirdPartyCoordinatorID = thirdPartyCoordinator.UserID;
-                                                sale.ManagerID = manager.UserID;
                                                 sale.Employees.Add(thirdPartyCoordinator);
-                                                sale.Employees.Add(manager);
+                                                if (manager != null)
+                                                {
+                                                    sale.ManagerID = manager.UserID;
+                                                    sale.Employees.Add(manager);
+
+                                                }
 
                                                 if (onlineCoordinator != null && thirdPartyCoordinator.BrokerType == BrokerType.ONLINE)
                                                 {

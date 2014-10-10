@@ -60,11 +60,6 @@ namespace MACPortal.ViewModel
                         Name = "Relogio Swatch",
                         Description = "Modelos Femininos e Masculinos"
                     },
-                    new RewardItemVM(1, 3, 4)
-                    {
-                        Name = "Playstation Portátil – Sony + Jogo Fifa Soccer 11",
-                        Description = "Possui saída A/V para televisores convencionais, possibilitando jogar na tela da TV. Reproduz música e vídeo, visualiza fotos, navega na internet, assiste TV e compartilha arquivos. Os jogos são em UMD (Universal Media Disc) suportando até 1,8 GB."
-                    },
                     new RewardItemVM(1, 4, 3)
                     {
                         Name = "Impressora Multifuncional + Calculadora Financeira",
@@ -241,6 +236,11 @@ namespace MACPortal.ViewModel
                     {
                         Name = "Smart TV Led 32”",
                         Description = "Smart TV Led 32” resolução HD, smart share, acesso a conteúdos Premium, time machine II, IPS e compatível com magic remote."
+                    },
+                    new RewardItemVM(2, 8, 2)
+                    {
+                        Name = "Playstation Portátil – Sony",
+                        Description = "Possui saída A/V para televisores convencionais, possibilitando jogar na tela da TV. Reproduz música e vídeo, visualiza fotos, navega na internet, assiste TV e compartilha arquivos. Os jogos são em UMD (Universal Media Disc) suportando até 1,8 GB."
                     },
 
                     #endregion
